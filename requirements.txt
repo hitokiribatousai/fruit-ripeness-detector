@@ -1,7 +1,7 @@
-keras>=3.5.0
+tensorflow-directml>=2.18.0
 streamlit>=1.36.0
-numpy>=1.26.4
+numpy>=1.26.0
 Pillow>=10.3.0
-matplotlib>=3.8.4
-scikit-learn>=1.4.2
+matplotlib>=3.8.0
 h5py>=3.11.0
+protobuf>=3.20.0
