@@ -1,11 +1,11 @@
 import streamlit as st
 import numpy as np
 from PIL import Image
-import tensorflow as tf
+import keras
 import os
 
 # --- KONFIGURASI HALAMAN ---
-st.set_page_config(page_title="Fruit Ripeness Detector", page_icon="🍌", layout="centered")
+st.set_page_config(page_title="Fruit Ripeness Detector", page_icon="", layout="centered")
 
 # --- LOAD MODEL ---
 @st.cache_resource
@@ -14,7 +14,11 @@ def load_model():
     if not os.path.exists(model_path):
         st.error(f"Model tidak ditemukan di path: {model_path}")
         return None
-    return tf.keras.models.load_model(model_path)
+    try:
+        return keras.models.load_model(model_path)
+    except Exception as e:
+        st.error(f"Gagal memuat model: {str(e)}")
+        return None
 
 model = load_model()
 class_names = ['ripe', 'rotten', 'unripe']
@@ -89,14 +93,13 @@ if image is not None and model is not None:
     elif pred_class == 'unripe':
         tags = ["Hard Texture", "Sour Taste", "Wait 2-3 Days"]
         advice = "Simpan di suhu ruang selama 2-3 hari lagi."
-    else: # rotten
+    else:  # rotten
         tags = ["Overripe", "Bad Smell", "Do Not Eat"]
         advice = "Jangan dikonsumsi. Segera buang atau komposkan."
-        
-        # --- SMART TAGS (VERSI DARK MODE) ---
+    
+    # ✅ DIPERBAIKI: Keluar dari blok if-else, agar tags muncul untuk SEMUA kelas
     cols = st.columns(3)
     for i, tag in enumerate(tags):
-        # Menggunakan style inline agar background transparan & border jelas di dark mode
         cols[i].markdown(
             f"""
             <div style='
@@ -116,4 +119,4 @@ if image is not None and model is not None:
     st.info(advice)
 
 elif model is None:
-    st.warning("Model belum dimuat. Pastikan file 'fruit_ripeness_model.h5' ada di folder 'models/'.")
+    st.warning("⚠️ Model belum dimuat. Pastikan file 'fruit_ripeness_model.h5' ada di folder 'models/'.")
